@@ -173,14 +173,21 @@ if __name__=='__main__':
             #pool.apply_async(sub_process,(que_tasks,que_output,que_flag,))
         #pool.apply_async(sub_process_1,(que_output,que_flag,producer_amount,args.o,))
         #pool.close()
-    
-    while not que_tasks.empty():
-        print('tasks done:'+str(que_tasks.qsize())+'/'+str(tasks_amount))
-        time.sleep(5)     
-    
-    que_tasks.join()
-    que_output.join()
-    #pool.join()
+    try:
+        while not que_tasks.empty():
+            print('tasks done:'+str(que_tasks.qsize())+'/'+str(tasks_amount))
+            time.sleep(5)     
+        que_tasks.join()
+        que_output.join()
+        #pool.join()
+    except KeyboardInterrupt:
+        choice=input("强制退出,是否保存未完成的任务为列表quit_save.txt [y,n]:")
+        if choice=='y':
+            with open('quit_save.txt','w') as f:
+                while not que_tasks.empty():
+                    task_save=str(que_tasks.get())+'\n'
+                    f.write(task_save)
+        exit(1)
     
     main()
     
